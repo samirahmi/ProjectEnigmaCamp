@@ -1,0 +1,22 @@
+Product_Id PK;Product;Price
+P001;Aneka Gorengan;2000
+P002;Es Ovaltine;6000
+P003;Es Teh Manis;1500
+P004;Es Teh Tawar;1500
+P005;Indomie Goreng Telor;10000
+P006;Indomie Kari Ayam Telor;10000
+P007;Kopi Kapal Api;4000
+P008;Nasi Goreng;12000
+P009;Nasi Goreng Spesial;25000
+P010;Nasi Putih;3000
+P011;Sayur Buncis;3000
+P012;Sayur Kangkung;1500
+P013;Sayur Lodeh;2500
+P014;Sayur Sop;2000
+P015;Sayur Tahu;3000
+P016;Tahu;2000
+P017;Telor Balado;4000
+P018;Telor Ceplok;5000
+P019;Telor Dadar;5000
+P020;Tempe;2000
+P021;Tempe Orek;3000

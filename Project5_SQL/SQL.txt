@@ -1,0 +1,268 @@
+--CREATE DATABASE TestDB; --perintah untuk membuat database
+----merubah database atau tabel
+--USE MASTER;
+--GO -- untuk menjalankan perintah diatas
+----ALTER DATABASE ShippingDB SET SINGLE_USER; -- WITH ROLLBACK IMMEDIATE;
+----GO
+
+--ALTER DATABASE ShipDB2 MODIFY NAME = ShipDB; -- merubah database menjadi ship_db
+--GO
+
+----ALTER DATABASE ShipDB SET MULTI_USER; -- set database menjadi multi user kembali
+----GO
+
+--drop-- menghapus database
+--DROP DATABASE TestDB;
+
+
+----create tabel
+--USE ShipDB; -- perintah untuk berganti atau menggunakan database tertentu
+--CREATE TABLE Customer2 (cust_id INT, --membuat sebuah tabel dengan field dibawah
+--	cust_name VARCHAR(100), 
+--	ship_address VARCHAR(250), 
+--	news_letter VARCHAR(50) )
+
+--DQL
+
+--SELECT * FROM Customer;
+
+--SELECT cust_id, cust_name, ship_address, news_letter FROM Customer;
+
+----DML
+--INSERT INTO Customer 
+--(cust_id, cust_name, ship_address, news_letter) 
+--VALUES (2, 'Rafif2', NULL ,'');
+
+
+--menambah field pada tabel
+--USE ShipDB;
+--ALTER TABLE Customer ADD zipcode INT ;
+
+--menghapus kolom field tabel
+--ALTER TABLE CUSTOMER DROP COLUMN zipcode;
+
+--menghapus tabel
+--DROP TABLE Customer;
+
+
+-- UPDATE == untuk mengupdate / merubah field pada tabel
+-- cara 1 untuk mengupdate semua record --TIDAK ADA Predicate
+--UPDATE Customer 
+--SET cust_id = 1,
+--cust_name = 'Raihanudin Rafif'
+
+--cara 2 == untuk mengupdate record tertentu
+--UPDATE Customer
+--SET news_letter = 'C# Fund'
+--WHERE cust_id = 1
+
+--SELECT * FROM Customer;
+
+
+--DELETE == untuk menghapus record pada sebuah tabel
+--DELETE FROM Customer -- untuk mendelete semua record yg ada HATI HATI GAN
+
+
+--DELETE FROM Customer WHERE cust_name = 'Rafif2'; -- untuk mendelete record dengan kondisi tertentu.
+
+
+--MERGE yakni  menggabungkan tabel
+
+--USE ShipDB; -- perintah untuk berganti atau menggunakan database tertentu
+--CREATE TABLE CustomerBakery (cust_id INT, --membuat sebuah tabel dengan field dibawah
+--	cust_name VARCHAR(100), 
+--	ship_address VARCHAR(250), 
+--	news_letter VARCHAR(50) )
+
+--INSERT INTO CustomerBakery 
+--(cust_id, cust_name, ship_address, news_letter) 
+--VALUES (4, 'Rafif4', NULL ,'Tangerang Lagi');
+
+--SELECT * FROM CustomerBakery;
+--SELECT * FROM Customer;
+
+--syntax merge
+--MERGE CustomerBakery AS TARGET
+--USING Customer AS SOURCE
+--ON SOURCE.cust_id = TARGET.cust_id
+--WHEN NOT MATCHED BY TARGET THEN
+--	INSERT (cust_id, cust_name, ship_address, news_letter)
+--	VALUES( SOURCE.cust_id, SOURCE.cust_name, SOURCE.ship_address, SOURCE.news_letter);
+
+--syntax merge
+--MERGE CustomerBakery AS TARGET
+--USING Customer AS SOURCE
+--ON SOURCE.cust_id = TARGET.cust_id
+--WHEN NOT MATCHED BY TARGET THEN -- ini ketika sumber tidak sama dengan target 
+--	INSERT (cust_id, cust_name, ship_address, news_letter)
+--	VALUES( SOURCE.cust_id, SOURCE.cust_name, SOURCE.ship_address, SOURCE.news_letter)
+--WHEN MATCHED THEN UPDATE SET --ini ketika sama antara sumber dan target
+--	TARGET.ship_address = SOURCE.ship_address,
+--	TARGET.news_letter = SOURCE.news_letter
+--WHEN NOT MATCHED BY SOURCE THEN --ini jika target tidak sama dengan sumber (yg didelete adalah yg di target)
+--	DELETE;
+
+
+
+--CALL digunakan untuk mengeksekusi perintah tertentu
+-- EXEC PROSEDURE 
+--CREATE PROCEDURE SelectAllCustomer
+--AS
+--	SELECT * FROM Customer
+--GO
+
+----mengeksekusi
+--EXEC SelectAllCustomer  --perintah yang dijalankan akan sama dengan yang diatas
+
+--LOCK TABEL
+--SELECT * FROM Customer
+--WITH (TABLOCK); --mengunci tabel sampai transaksi selesai, semua eksekusi akan diblok otomatis oleh SQL Server
+
+--SELECT * FROM Customer
+--WITH (HOLDLOCK); -- mengunci tabel sampai transaksi selesai, semua eksekusi akan di hold sementara
+
+--SELECT * FROM Customer
+--WITH (UPDLOCK); --mengunci tabel tapi hanya pada perintah INSERT, UPDATE, DELETE, tapi memperbolehkan perintah SELECT
+
+--SELECT * FROM Customer
+--WITH (ROWLOCK); -- Mengunci table per row records dan merealese row records setelah diread
+
+--SELECT * FROM Customer
+--WITH (NOLOCK); -- tidak melakukan kuncian apapun dan akan mrealase setelah digunakan
+
+--USE ShipDB;
+
+--CREATE TABLE CuatomerBarang(
+--	cust_id INT PRIMARY KEY,
+--	cust_name VARCHAR(100)
+--)
+
+--primary key tidak boleh duplikat dan null
+
+
+--FOREIGN KEY
+	
+--CREATE TABLE OrderDetails(
+--	OrderId INT PRIMARY KEY,
+--	CustID INT FOREIGN KEY REFERENCES CuatomerBarang(cust_id)
+--)
+
+--INSERT INTO OrderDetails(
+--	OrderId, CustID
+--) VALUES (3, 2)
+
+
+--SELECT * FROM CustomerBarang;
+
+--SELECT * FROM OrderDetails;
+
+--ALTER TABLE OrderDetails ADD harga_barang INT
+
+INSERT INTO CustomerBarang (cust_name) VALUES ('rahman');
+INSERT INTO OrderDetails (OrderId, CustID, harga_barang) VALUES (5, 1, 15000);
+
+
+--JOIN sama dengan INNER JOIN
+SELECT * FROM CustomerBarang;
+SELECT * FROM OrderDetails;
+
+SELECT 
+	custb.cust_name, ord.CustID
+
+FROM CustomerBarang custb
+JOIN OrderDetails ord ON custb.cust_id = ord.CustID
+
+--LEFT JOIN, mengambil data tabel sebelah kiri baik yg sama maupun tidak dengan yg di sebelah kanan == OUTER LEFT
+SELECT * FROM CustomerBarang;
+SELECT * FROM OrderDetails;
+
+SELECT 
+	custb.cust_name, ord.CustID
+
+FROM CustomerBarang custb --table customer menjadi tabel paling kiri, semntara orderetail menjadi tabel sebelah kanan
+LEFT JOIN OrderDetails ord ON ord.CustID = custb.cust_id
+
+--RIGHT JOIN, mengambil data tabel sebelah kiri baik yg sama maupun tidak dengan yg di sebelah kanan == OUTER RIGHT
+
+SELECT 
+	custb.cust_name, ord.CustID
+
+FROM CustomerBarang custb --table customer menjadi tabel paling kiri, semntara orderetail menjadi tabel sebelah kanan
+RIGHT JOIN OrderDetails ord ON ord.CustID = custb.cust_id
+
+
+--AGREGATE
+--SUM
+SELECT SUM (harga_barang) AS harga_barang FROM OrderDetails
+
+SELECT ord.harga_barang, cust.cust_name, SUM (harga_barang) AS harga_barang
+FROM OrderDetails ord
+JOIN CustomerBarang cust ON cust_id = ord.OrderID 
+GROUP BY ord.harga_barang, cust.cust_name
+
+--GRPUP BY adl mengelompokan tabel pada field tertentu
+
+--HAVING
+SELECT COUNT (cust_id) cust_name
+FROM CustomerBarang
+GROUP BY cust_name
+HAVING COUNT (cust_id) >= 1
+
+
+
+--WHERE
+SELECT cust_name, cust_id FROM CustomerBarang
+WHERE cust_id = 2 --WHERE 1
+
+SELECT cust_name, cust_id FROM CustomerBarang
+WHERE cust_name = 'rafif' AND cust_id = 1 --WHERE 2
+
+SELECT cust_name, cust_id FROM CustomerBarang
+WHERE cust_name LIKE 'R%'  --WHERE 3 -- mecari dengan cust_name dengan nama awalan R
+
+
+--GUID -- Global Unic Identifier 
+-- adalah 16 byte binary sql datatype yang secara global unik di setiap tabel, database dan server
+-- GUID = 16 bit
+-- UUID = 128 bit
+
+CREATE TABLE Employee (
+EmployeeId UNIQUEIDENTIFIER PRIMARY KEY default NEWID(), -- new id perintah yang digunakan untuk generate GUID
+EmployeeName VARCHAR (200)
+)
+
+INSERT INTO Employee VALUES (default,'Marwan',100);
+INSERT INTO Employee VALUES (default,'Malik',100);
+INSERT INTO Employee VALUES (default,'Malkan',100);
+INSERT INTO Employee VALUES (default,'Rafif',100);
+INSERT INTO Employee VALUES (default,'Rahman',100);
+INSERT INTO Employee VALUES (default,'Ridwan',100);
+UPDATE Employee SET EmployeeName = 'Raihanudin' WHERE Salary = 10000
+
+SELECT * FROM Employee;
+
+DELETE FROM Employee WHERE EmployeeName = 'Raihanudin'
+
+
+--CREATE INDEX == digunakan untuk melakukan pencarian agar lebih cepat
+CREATE INDEX EmployeeIDX ON Employee(EmployeeName)
+DROP INDEX EmployeeIDX ON Employee
+
+ALTER TABLE Employee ADD Salary INT
+
+--TRANSACTION
+
+BEGIN TRANSACTION -- untuk memulai transaksi, sehingga semua query yang masuk akan dihold oleh SQL
+COMMIT -- menerima semua transaksi (merelase hold lock)
+ROLLBACK -- menerima / mengembalikan kondisi tabel ke sebelum transaksi
+
+BEGIN TRANSACTION
+INSERT INTO Employee VALUES (default, 'ISTIQOMAH', 2200)
+
+
+--ISOLATION LEVEL
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+BEGIN TRANSACTION
+UPDATE Employee
+SET Salary = 200
+WHERE EmployeeName = 'Rafif';
